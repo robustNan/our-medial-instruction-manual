@@ -1657,11 +1657,3 @@ eventTarget.addEventListener(
   (event: Types.EventTypes.NewPointFromDragEvent) => void
 )
 ```
-
-# 已知问题
-
-* 版本Build输入存在问题，worker不能正常加载，Clipper无法正常调用（正在解决中，正常版本将以0.5.0发布）
-
-# 意见/问题反馈
-
-jiannan.jiao@ourunited.com
