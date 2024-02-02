@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { merge } from "lodash";
 import { reactive, ref, unref } from "vue";
+import MedicalImage, { CONSTANT, managers, utilities } from "our-medical";
 
 import {
   Enums as coreEnums,
@@ -27,7 +28,6 @@ import vtkPolyData from "@kitware/vtk.js/Common/DataModel/PolyData";
 import vtkActor from "@kitware/vtk.js/Rendering/Core/Actor";
 import vtkMapper from "@kitware/vtk.js/Rendering/Core/Mapper";
 
-import MedicalImage, { CONSTANT, managers, utilities } from "our-medical";
 import { Discovery, Optima } from "@/data/electron_density";
 import ColorMap from "@/data/color_map";
 import { SeriesNames, useSeriesProps } from "@/scripts/composables";
@@ -127,7 +127,7 @@ const volumeList = reactive([
 
 function importContour() {
   fetch("external-data.json").then((response) => {
-    response.json().then(async (value) => {
+    response.json().then((value) => {
       console.time("create external by contoursdata finish");
 
       const { segmentationId, volumeFillAsync /* volumeLoaderAsync */ } =
@@ -138,9 +138,6 @@ function importContour() {
 
       volumeList[0].segmentationId = segmentationId;
       volumeList[0].volumeValue = value.volumeValue / 1000;
-
-      await volumeFillAsync;
-      console.timeEnd("create external by contoursdata finish");
 
       segmentationStateManager
         .addRepresentationsAsync(id, [segmentationId], false)
@@ -158,11 +155,15 @@ function importContour() {
             }
           }
         });
+
+      volumeFillAsync.then(() => {
+        console.timeEnd("create external by contoursdata finish");
+      });
     });
   });
 
   fetch("lung-data.json").then((response) => {
-    response.json().then(async (value) => {
+    response.json().then((value) => {
       console.time("create lung by contoursdata finish");
 
       const { segmentationId, volumeFillAsync } =
@@ -173,9 +174,6 @@ function importContour() {
 
       volumeList[1].segmentationId = segmentationId;
       volumeList[1].volumeValue = value.volumeValue / 1000;
-
-      await volumeFillAsync;
-      console.timeEnd("create lung by contoursdata finish");
 
       segmentationStateManager
         .addRepresentationsAsync(id, [segmentationId], false)
@@ -193,24 +191,41 @@ function importContour() {
             }
           }
         });
+
+      volumeFillAsync.then(() => {
+        console.timeEnd("create lung by contoursdata finish");
+      });
     });
   });
 }
 
 const levelPolyData = new Map();
 
-/* const pool = workerpool.pool(
-  new URL("../scripts/marchingCubes.ts", import.meta.url).href,
-  {
-    // minWorkers: 1,
-    maxWorkers: navigator.hardwareConcurrency || 4,
-    workerType: "web",
-    workerOpts: {
-      name: "marchingCubes",
-      type: import.meta.env.PROD ? undefined : "module",
-    },
-  }
-); */
+console.log(import.meta.url);
+console.log(new URL("../scripts/marchingCubes.worker.js", import.meta.url));
+const pool = new utilities.ThreadPool(
+  new URL("@/scripts/marchingCubes.worker.js", import.meta.url).href,
+  navigator.hardwareConcurrency || 4
+);
+
+// 此处调用线程池还存在问题，正在调试
+const blob = new Blob(
+  [
+    `importScripts("${
+      new URL("@/scripts/test.worker.js", import.meta.url).href
+    }")`,
+  ],
+  { type: "text/javascript" }
+);
+const blobUrl = window.URL.createObjectURL(blob);
+
+const poolTest = new utilities.ThreadPool(
+  blobUrl,
+  // new URL("@/scripts/test.worker.js", import.meta.url).href,
+  navigator.hardwareConcurrency || 4
+);
+
+poolTest.addTask([1, 2]).then(console.log);
 
 async function importDoseVolume() {
   const response = await fetch("/dose.vti", { method: "get" });
@@ -242,21 +257,19 @@ async function importDoseVolume() {
   console.clear();
   console.time("dose-plane-time");
 
-  // const allPr = [];
+  const allPr = [];
 
   for (const iterator of levelData.value) {
-    /* allPr.push(
+    allPr.push(
       pool
-        .exec("marchingCubes", [
-          {
-            dimensions: imageData.getDimensions(),
-            direction: imageData.getDirection(),
-            origin,
-            scalarData,
-            spacing: imageData.getSpacing(),
-            value: iterator.absolute,
-          },
-        ])
+        .addTask({
+          dimensions: imageData.getDimensions(),
+          direction: imageData.getDirection(),
+          origin,
+          scalarData,
+          spacing: imageData.getSpacing(),
+          value: iterator.absolute,
+        })
         .then((data: any) => {
           const polyData = vtkPolyData.newInstance();
 
@@ -273,19 +286,17 @@ async function importDoseVolume() {
 
           levelPolyData.set(iterator.absolute, polyData);
         })
-        // 当线程运行结束后销毁线程, 如果这里执行terminate, 后面的Promise.all将无法收到通知
-        .then(() => pool.terminate)
-    ); */
+    );
   }
 
-  /* console.log(pool);
+  console.log(pool);
 
   Promise.all(allPr).then(() => {
     console.timeEnd("dose-plane-time");
     // terminate all workers when done, 如果不执行terminate线程将一直存在等待下次调用
-    pool.terminate();
+    // pool.terminate()
     console.log(pool);
-  }); */
+  });
 }
 
 /**

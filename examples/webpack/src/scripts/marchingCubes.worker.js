@@ -3,18 +3,18 @@ import vtkDataSetAttributes from "@kitware/vtk.js/Common/DataModel/DataSetAttrib
 import vtkImageData from "@kitware/vtk.js/Common/DataModel/ImageData";
 import vtkImageMarchingCubes from "@kitware/vtk.js/Filters/General/ImageMarchingCubes.js";
 
-import type { Types } from "@cornerstonejs/core";
+// import type { Types } from "@cornerstonejs/core";
 
-type Data = {
+/* type Data = {
   dimensions: Types.Point3;
   direction: Types.Mat3;
   origin: Types.Point3;
   scalarData: Types.PixelDataTypedArray;
   spacing: Types.Point3;
   value: number; //vtkImageMarchingCubes.setContourValue(value)
-};
+}; */
 
-export default self.onmessage = ({ data }: MessageEvent<Data>) => {
+self.onmessage = ({ data }) => {
   const { dimensions, direction, origin, scalarData, spacing, value } = data;
 
   const dataArray = vtkDataArray.newInstance({
@@ -33,8 +33,6 @@ export default self.onmessage = ({ data }: MessageEvent<Data>) => {
   imageData.setOrigin(origin);
   imageData.setPointData(pointData);
   imageData.setSpacing(spacing);
-
-  // debugger
 
   const marchingCubes = vtkImageMarchingCubes.newInstance({
     computeNormals: true,
