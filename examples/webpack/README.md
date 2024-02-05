@@ -1,4 +1,4 @@
-# test-our-medical-webpack
+# our-medical-running-in-webpack
 
 ## Project setup
 ```
