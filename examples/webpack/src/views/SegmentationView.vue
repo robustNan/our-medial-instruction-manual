@@ -506,6 +506,8 @@ function deleteToolActived() {
  * ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------
  */
 
+const imageURL = ref("");
+
 function svgToImageData() {
   utilities
     .captureImage(id, {
@@ -514,6 +516,7 @@ function svgToImageData() {
     })
     .then((value) => {
       console.log(value);
+      if (typeof value === "string") imageURL.value = value;
     });
 }
 </script>
@@ -663,12 +666,9 @@ function svgToImageData() {
           <input type="range" min="2" max="40" step="1" v-model="brushRadius" />
           {{ brushRadius }}px
         </label>
-
-        <!-- <button @click="pointInSegmentation">In Segmentation</button> -->
-
-        <!-- <button @click="circleBrush">Circle Brush</button>
-        <button @click="sphereBrush">Sphere Brush</button> -->
       </div>
+
+      <img :src="imageURL" />
     </div>
   </main>
 </template>

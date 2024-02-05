@@ -147,9 +147,7 @@ export default function initNailModule(
 
     draggableStateManager.nail.updata(
       patientModelId,
-      {
-        point: positionRef.value,
-      },
+      { point: positionRef.value, index: selectedNail.value },
       [componentId]
     );
   }

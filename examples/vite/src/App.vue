@@ -22,8 +22,6 @@ eventTarget.addEventListener(
         <RouterLink to="/drag">DragTestPage</RouterLink>
         <RouterLink to="/fusion">FusionTestPage</RouterLink>
         <RouterLink to="/segmentation">SegmentationPage</RouterLink>
-        <RouterLink to="/slice">SliceInforPage</RouterLink>
-        <RouterLink to="/3d">3DViewPage</RouterLink>
       </nav>
     </div>
   </header>

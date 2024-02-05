@@ -110,7 +110,7 @@ function brushToolActived() {
 
 const brushRadius = ref(10)
 
-watch(brushRadius, value => {
+watch(brushRadius, (value) => {
   toolsStateManager.setBrushRadius(id, value)
 })
 
@@ -130,7 +130,7 @@ function sphereBrush() {
 
 const ColorLUT: coreTypes.ColorLUT = [[0, 0, 0, 0]]
 for (const iterator of ColorMap) {
-  const color = iterator.split(',').map(v => Number(v))
+  const color = iterator.split(',').map((v) => Number(v))
   ColorLUT.push(color.concat(255) as coreTypes.Color)
 }
 
@@ -161,7 +161,7 @@ function setActiveSegmentation(volumeInfo: any) {
 
   if (volumeInfo.segmentationId) {
     // 切换分割体积时可以显示加载动画，通过then在成功后隐藏加载动画
-    segmentationStateManager.setActiveSegmentation(id, { ...volumeInfo }).then(segment => {
+    segmentationStateManager.setActiveSegmentation(id, { ...volumeInfo }).then((segment) => {
       console.log(segment)
     })
   } else {
@@ -175,7 +175,7 @@ function setActiveSegmentation(volumeInfo: any) {
     // 向toolGroup中添加分割体积representation
     segmentationStateManager
       .addRepresentationsAsync(id, [volumeInfo.segmentationId])
-      .then(toolGroupRepresentationUIDMap => {
+      .then((toolGroupRepresentationUIDMap) => {
         if (toolGroupRepresentationUIDMap) {
           // 如果返回Map对象表示添加成功
           for (const toolGroupId of toolGroupRepresentationUIDMap.keys()) {
@@ -199,7 +199,7 @@ function setActiveSegmentation(volumeInfo: any) {
           { ...volumeInfo },
           { activeMaximize: false, inactiveMinimize: true }
         )
-        .then(segment => {
+        .then((segment) => {
           console.log(segment)
         })
     })
@@ -208,7 +208,7 @@ function setActiveSegmentation(volumeInfo: any) {
 
 function unsetActiveSegmentation() {
   // 切换勾画体积时可以显示加载等候，通过then在切换勾画体积成功后隐藏加载动画
-  segmentationStateManager.setActiveSegmentation(id).then(segment => {
+  segmentationStateManager.setActiveSegmentation(id).then((segment) => {
     console.log(segment)
   })
 }
@@ -264,8 +264,8 @@ function exportContour() {
 }
 
 function importContour() {
-  fetch('external-data.json').then(response => {
-    response.json().then(value => {
+  fetch('external-data.json').then((response) => {
+    response.json().then((value) => {
       console.time('create external by contoursdata finish')
 
       const { segmentationId, volumeFillAsync /* volumeLoaderAsync */ } =
@@ -279,7 +279,7 @@ function importContour() {
 
       segmentationStateManager
         .addRepresentationsAsync(id, [segmentationId], false)
-        .then(toolGroupRepresentationUIDMap => {
+        .then((toolGroupRepresentationUIDMap) => {
           if (toolGroupRepresentationUIDMap) {
             // 如果返回Map对象表示添加成功
             for (const toolGroupId of toolGroupRepresentationUIDMap.keys()) {
@@ -310,8 +310,8 @@ function importContour() {
     })
   })
 
-  fetch('lung-data.json').then(response => {
-    response.json().then(value => {
+  fetch('lung-data.json').then((response) => {
+    response.json().then((value) => {
       console.time('create lung by contoursdata finish')
 
       const { segmentationId, volumeFillAsync } =
@@ -325,7 +325,7 @@ function importContour() {
 
       segmentationStateManager
         .addRepresentationsAsync(id, [segmentationId], false)
-        .then(toolGroupRepresentationUIDMap => {
+        .then((toolGroupRepresentationUIDMap) => {
           if (toolGroupRepresentationUIDMap) {
             // 如果返回Map对象表示添加成功
             for (const toolGroupId of toolGroupRepresentationUIDMap.keys()) {
@@ -468,14 +468,17 @@ function deleteToolActived() {
  * ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------
  */
 
+const imageURL = ref('')
+
 function svgToImageData() {
   utilities
     .captureImage(id, {
       id: volumeList[0].segmentationId,
       index: volumeList[0].segmentIndex
     })
-    .then(value => {
+    .then((value) => {
       console.log(value)
+      if (typeof value === 'string') imageURL.value = value
     })
 }
 </script>
@@ -563,7 +566,7 @@ function svgToImageData() {
               <td>{{ volume.name }}</td>
               <td>{{ volume.volumeId }}</td>
               <td>
-                <select @change="e => setRepresentationColor(volume, e)">
+                <select @change="(e) => setRepresentationColor(volume, e)">
                   <option
                     v-for="(item, index) in ColorLUT"
                     :selected="
@@ -596,12 +599,9 @@ function svgToImageData() {
           <input type="range" min="2" max="40" step="1" v-model="brushRadius" />
           {{ brushRadius }}px
         </label>
-
-        <!-- <button @click="pointInSegmentation">In Segmentation</button> -->
-
-        <!-- <button @click="circleBrush">Circle Brush</button>
-        <button @click="sphereBrush">Sphere Brush</button> -->
       </div>
+
+      <img :src="imageURL" />
     </div>
   </main>
 </template>

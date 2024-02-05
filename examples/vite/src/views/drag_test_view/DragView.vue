@@ -196,8 +196,8 @@ function loadDose() {
           Draggable Tool Exchange
         </button>
 
-        <button @click="addDragTool">add dragTool</button>
-        <button @click="loadDose">load dose</button>
+        <button @click="addDragTool">Add DragTool</button>
+        <button @click="loadDose">Load Dose</button>
       </div>
 
       <!-- origin -->
@@ -477,10 +477,15 @@ function loadDose() {
         >
           Nail Draggable
         </button>
-        <button @mousedown="nailModule.startDrag">ADD Nail</button>
+        <button @mousedown="nailModule.startDrag">Add Nail</button>
 
         <select @change="nailModule.nailChange">
-          <option v-for="item in nailModule.nailsData" :key="item.key" :value="item.key">
+          <option
+            v-for="(item, index) in nailModule.nailsData"
+            :selected="nailModule.selectedNail.value === index"
+            :key="item.key"
+            :value="item.key"
+          >
             {{ item.name }}
           </option>
         </select>
@@ -533,7 +538,7 @@ function loadDose() {
           Couch Visible
         </button>
 
-        <button @mousedown="couchModule.addPrimary">ADD</button>
+        <button @mousedown="couchModule.addPrimary">Add</button>
 
         <button @mousedown="couchModule.removePrimary">Delete</button>
 

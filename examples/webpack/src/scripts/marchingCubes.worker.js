@@ -5,15 +5,19 @@ import vtkImageMarchingCubes from "@kitware/vtk.js/Filters/General/ImageMarching
 
 // import type { Types } from "@cornerstonejs/core";
 
-/* type Data = {
-  dimensions: Types.Point3;
-  direction: Types.Mat3;
-  origin: Types.Point3;
-  scalarData: Types.PixelDataTypedArray;
-  spacing: Types.Point3;
-  value: number; //vtkImageMarchingCubes.setContourValue(value)
-}; */
+/** @typedef {[number, number, number]} Point3 */
+/** @typedef {[number, number, number, number, number, number, number, number, number]} Mat3 */
 
+/**
+ * @param {{data: {
+ *   dimensions: Point3
+ *   direction: Mat3
+ *   origin: Point3
+ *   scalarData: Uint8Array | Uint16Array | Uint32Array
+ *   spacing: Point3
+ *   value: number
+ * }}} {data}
+ */
 self.onmessage = ({ data }) => {
   const { dimensions, direction, origin, scalarData, spacing, value } = data;
 

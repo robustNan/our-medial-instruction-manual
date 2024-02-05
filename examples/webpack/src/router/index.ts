@@ -29,16 +29,6 @@ const router = createRouter({
       name: "segmentation",
       component: () => import("../views/SegmentationView.vue"),
     },
-    {
-      path: "/slice",
-      name: "slice",
-      component: () => import("../views/SliceInforView.vue"),
-    },
-    {
-      path: "/3d",
-      name: "3d",
-      component: () => import("../views/3DView.vue"),
-    },
   ],
 });
 

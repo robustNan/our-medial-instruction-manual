@@ -167,8 +167,6 @@ function display() {
 }
 
 function loadPri() {
-  // const headers = new Headers()
-  // headers.append('Content-Type', 'application/octet-stream')
   fetch("/dose.vti", { method: "get" }).then(async (response) => {
     if (response.status === 200) {
       const blob = await response.blob();
@@ -197,59 +195,6 @@ function loadPri() {
         "dose data range",
         csUtilites.getMinMax(imageData.getPointData().getScalars().getData())
       );
-
-      // 验证VTK直接渲染剂量场，失败
-      /* const doseId = 'dose'
-
-      // dose volume
-      const imageVolume = new ImageVolume({
-        volumeId: doseId,
-        metadata: merge(metadata, {
-          Columns: 500,
-          PixelSpacing: [1, 1],
-          Rows: 500
-        }),
-        dimensions: imageData.getDimensions(),
-        spacing: imageData.getSpacing(),
-        origin,
-        direction: imageData.getDirection(),
-        imageData,
-        scalarData: imageData.getPointData().getArrayByIndex(0).getData(),
-        sizeInBytes: arrayBuffer.byteLength
-      })
-
-      await cache.putVolumeLoadObject(doseId, {
-        promise: Promise.resolve(imageVolume)
-      })
-
-      const viewport = utilities.viewportsFindor.getViewport(
-        id,
-        CONSTANT.TOOL_GROUP_TYPE.P,
-        Enums.OrientationAxis.AXIAL
-      )
-
-      viewport?.addVolumes([
-        {
-          volumeId: doseId,
-          callback({ volumeActor, volumeId }) {
-            const property = volumeActor.getProperty()
-
-            property.setUseLabelOutline(true)
-            property.setLabelOutlineThickness(1)
-
-            const cfun = vtkColorTransferFunction.newInstance()
-
-            cfun.addRGBPoint(1000, 255, 0, 0)
-            cfun.addRGBPoint(750, 0, 255, 0)
-            cfun.addRGBPoint(500, 0, 0, 255)
-            cfun.addRGBPoint(250, 255, 0, 255)
-
-            property.setRGBTransferFunction(0, cfun)
-          }
-        }
-      ])
-
-      viewport?.render() */
     }
   });
 }
@@ -311,38 +256,8 @@ const imageURL = ref("");
 function svgToImageData() {
   utilities.captureImage(id).then((value) => {
     console.log(value);
+    if (typeof value === "string") imageURL.value = value;
   });
-
-  /* const blob = new Blob([svgElement.outerHTML], { type: 'image/svg+xml' })
-  const reader = new FileReader()
-  reader.readAsDataURL(blob)
-  reader.onload = evt => {
-    if (evt.target) {
-      const base64 = evt.target.result
-      if (typeof base64 === 'string') {
-        const img = new Image()
-
-        // 跨域图片需要添加这个属性，否则画布被污染了无法导出图片
-        img.setAttribute('crossOrigin', 'anonymous')
-        img.src = base64
-        img.height = svgElement.clientHeight
-        img.width = svgElement.clientWidth
-
-        img.onload = () => {
-          const canvas = document.createElement('canvas')
-          const ctx = canvas.getContext('2d')
-
-          canvas.width = img.width
-          canvas.height = img.height
-
-          if (ctx) {
-            ctx.drawImage(img, 0, 0, img.width, img.height)
-            imageURL.value = canvas.toDataURL('image/png')
-          }
-        }
-      }
-    }
-  } */
 }
 </script>
 
