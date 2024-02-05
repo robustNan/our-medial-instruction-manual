@@ -1,4 +1,6 @@
-<img src="http://www.ourunited.com/img/logoVi.d1e48778.png" title="" alt="" data-align="center">
+<p align="center">
+    <img src="http://www.ourunited.com/img/logoVi.d1e48778.png" title="" alt="" data-align="center">
+</p>
 
 ### our-medical 简介
 
