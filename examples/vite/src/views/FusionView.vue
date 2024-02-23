@@ -21,9 +21,9 @@ function changeLayout(e: GlobalEventHandlersEventMap['change']): void {
  * ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------
  */
 
-const { props: priProps, propsRefs: priPreosRefs } = useSeriesProps(SeriesNames.a_ffp_ct_our)
+const { props: priProps, propsRefs: priPreosRefs } = useSeriesProps(SeriesNames.a_hfs_ct_ohif)
 
-const { props: secProps, propsRefs: secPropsRefs } = useSeriesProps(SeriesNames.a_ffs_ct_our)
+const { props: secProps, propsRefs: secPropsRefs } = useSeriesProps(SeriesNames.a_hfs_pt_ohif)
 
 function renderCT() {
   priPreosRefs.studiesId = priProps.studiesId

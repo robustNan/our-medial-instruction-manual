@@ -1,6 +1,6 @@
 ## 公共方法
 
-    utilities中提供了许多方法共使用，这里介绍部分考虑到面向开发这的功能
+    utilities中提供了许多方法共使用，这里介绍部分考虑到面向开发者的功能
 
 ```typescript
 import { Enums, type Types as coreTypes } from '@cornerstonejs/core'
