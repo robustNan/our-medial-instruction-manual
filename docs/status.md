@@ -178,15 +178,15 @@ volumeLoader.then(() => {
 
 ```typescript
 import type { Types as coreTypes } from '@cornerstone/core'
-import type { Point } from '@doodle3d/clipper-js'
+import type { PointLower } from '@doodle3d/clipper-js'
 
 type ContourData = {
   bounds: number[] //勾画轮廓外包围盒world坐标系下尺寸
   boundsIJK: number[] //勾画轮廓外包围盒在分割体积中的IJK
-  direction: coreTypes.Mat3
+  direction: coreTypes.Mat3 //数据是以轴状位的方向到处
   dimensions: coreTypes.Point3
   origin: coreTypes.Point3
-  contours: Map<number, Point[][]>
+  contours: Map<number, PointLower[][]>
   spacing: coreTypes.Point3
   volumeValue: number
 }
@@ -203,11 +203,11 @@ segmentationStateManager.getContourData(segmentationId: string)
 
 ```typescript
 import type { Types as coreTypes } from '@cornerstone/core'
-import type { Point } from '@doodle3d/clipper-js'
+import type { PointLower } from '@doodle3d/clipper-js'
 
 type ContourData = {
   bounds: number[] //分割体积外包围盒world坐标系下尺寸
-  contours: { [zPosition: string]: Point[][] } }
+  contours: { [zPosition: string]: PointLower[][] } }
   volumeValue: number
 }
 ```
@@ -216,8 +216,6 @@ type ContourData = {
 
 ```typescript
 import { managers } from 'our-medical'
-import type { Types as coreTypes } from '@cornerstone/core'
-import type { Point } from '@doodle3d/clipper-js'
 
 const { segmentationStateManager } = managers
 
@@ -239,8 +237,6 @@ volumeFillAsync.then((segmentVolumeId) => {})
 
 ```typescript
 import { managers } from 'our-medical'
-import type { Types as coreTypes } from '@cornerstone/core'
-import type { Point } from '@doodle3d/clipper-js'
 
 const { segmentationStateManager } = managers
 
@@ -257,8 +253,6 @@ segmentationStateManager.updateSegmentationByContoursData(
 
 ```typescript
 import { managers } from 'our-medical'
-import type { Types as coreTypes } from '@cornerstone/core'
-import type { Point } from '@doodle3d/clipper-js'
 
 const { segmentationStateManager } = managers
 
@@ -562,7 +556,7 @@ fiducial.remove(
 #### frame
 
 ```typescript
-import type { Types } from '@cornerstonejs/core'
+import type { Types as coreTypes } from '@cornerstonejs/core'
 
 type FramePointsStyleOption = {
   pointColor?: string
@@ -578,7 +572,7 @@ type ModelMap = Map<Position, FramePointsAnnotation>
 type Data = Map<
   number, //轴状位Z方向坐标
   {
-    points: Types.Point3[] //提取点、拟合点、物理点数据，coreTypes.Point3[]长度为6
+    points: coreTypes.Point3[] //提取点、拟合点、物理点数据，coreTypes.Point3[]长度为6
     deviations?: number[] //提取点偏差值
     options?: FramePointsStyleOption
   }
@@ -598,7 +592,7 @@ frame.getExtractedPoints(modelId: string, position?: number)
 frame.updateExtractedPoint(
   modelId: string,
   data: {
-    point: Types.Point2
+    point: coreTypes.Point2
     index?: number
     position?: Position
   },
@@ -828,6 +822,9 @@ shot.updateAll(
     registe中对处理程序采取注册机制，不同的处理程序将在DraggableTool的addNewAnnotation、handleSelectedCallback、toolSelectedCallback、isPointNearTool、getHandleNearImagePoint和DraggableDisplayTool的renderAnnotation中调用。
 
 ```typescript
+import type { Types as coreTypes } from '@cornerstonejs/core'
+import type { Types as toolsTypes } from '@cornerstonejs/tools'
+
 /**
  * 注册不同类型拖拽元素的渲染器
  * DraggableDisplayTool.renderAnnotation中调用
@@ -1120,7 +1117,7 @@ renderingEngineManager.getGlobalRenderingEngine().then(renderingEngine => {
     该模块中提供getAxixViewportIds和getComponentViewportIds两个API用来获取视口ID。
 
 ```typescript
-import { managers} from 'our-medical
+import { managers} from 'our-medical'
 const { axisStateManager } = managers
 
 // 获取组件中主序列或次序列的视口ID

@@ -308,7 +308,6 @@ function importContour() {
         );
 
       volumeList[0].segmentationId = segmentationId;
-      volumeList[0].volumeValue = value.volumeValue / 1000;
 
       segmentationStateManager
         .addRepresentationsAsync(id, [segmentationId], false)
@@ -327,19 +326,20 @@ function importContour() {
           }
         });
 
-      volumeFillAsync.then(() => {
+      volumeFillAsync.then((value) => {
         console.timeEnd("create external by contoursdata finish");
+        volumeList[0].volumeValue = value.volumeValue / 1000;
       });
 
       // 模拟勾画中的体积进行插值运算后更新体积，输入的勾画数据不可超出已有体积边界
-      /* segmentationStateManager.updateSegmentationByContoursData(
+      /* const volumeValue = segmentationStateManager.updateSegmentationByContoursData(
         {
           segmentationId: volumeList[0].segmentationId,
           segmentIndex: volumeList[0].segmentIndex
         },
         value
       )
-      volumeList[0].volumeValue = value.volumeValue / 1000 */
+      volumeList[0].volumeValue = volumeValue / 1000 */
     });
   });
 
@@ -354,7 +354,6 @@ function importContour() {
         );
 
       volumeList[1].segmentationId = segmentationId;
-      volumeList[1].volumeValue = value.volumeValue / 1000;
 
       segmentationStateManager
         .addRepresentationsAsync(id, [segmentationId], false)
@@ -373,8 +372,9 @@ function importContour() {
           }
         });
 
-      volumeFillAsync.then(() => {
+      volumeFillAsync.then((value) => {
         console.timeEnd("create lung by contoursdata finish");
+        volumeList[1].volumeValue = value.volumeValue / 1000;
       });
     });
   });
