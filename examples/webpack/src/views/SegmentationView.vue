@@ -201,7 +201,7 @@ function setActiveSegmentation(volumeInfo: any) {
 
     // 向toolGroup中添加分割体积representation
     segmentationStateManager
-      .addRepresentationsAsync(id, [volumeInfo.segmentationId])
+      .addRepresentationsAsync(id, [volumeInfo])
       .then((toolGroupRepresentationUIDMap) => {
         if (toolGroupRepresentationUIDMap) {
           // 如果返回Map对象表示添加成功
@@ -310,7 +310,7 @@ function importContour() {
       volumeList[0].segmentationId = segmentationId;
 
       segmentationStateManager
-        .addRepresentationsAsync(id, [segmentationId], false)
+        .addRepresentationsAsync(id, [volumeList[0]], false)
         .then((toolGroupRepresentationUIDMap) => {
           if (toolGroupRepresentationUIDMap) {
             // 如果返回Map对象表示添加成功
@@ -356,7 +356,7 @@ function importContour() {
       volumeList[1].segmentationId = segmentationId;
 
       segmentationStateManager
-        .addRepresentationsAsync(id, [segmentationId], false)
+        .addRepresentationsAsync(id, [volumeList[1]], false)
         .then((toolGroupRepresentationUIDMap) => {
           if (toolGroupRepresentationUIDMap) {
             // 如果返回Map对象表示添加成功

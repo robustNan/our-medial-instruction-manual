@@ -127,7 +127,7 @@ const { segmentationId, volumeLoader } = segmentationStateManager.createSegmenta
 // 向ToolGroup中添加segmentationRepresentation，异步
 segmentationStateManager.addRepresentationsAsync(
   componentId: MedicalComponentID | DisplayComponentID,
-  segmentationIds: string[],
+  segmentationIds: { segmentationId: string; segmentIndex: number }[],
   active?: boolean
 ).then(toolGroupRepresentationUIDMap => {
   /**
