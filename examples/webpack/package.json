@@ -14,7 +14,7 @@
     "@cornerstonejs/tools": "^1.51.5",
     "@kitware/vtk.js": "^29.3.0",
     "core-js": "^3.8.3",
-    "our-medical": "^0.6.5",
+    "our-medical": "^0.6.6",
     "vue": "^3.2.13",
     "vue-router": "^4.2.5"
   },
