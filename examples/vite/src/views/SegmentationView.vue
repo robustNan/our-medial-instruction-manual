@@ -233,8 +233,8 @@ function setRepresentationColor(volumeInfo: any, e: GlobalEventHandlersEventMap[
   )
 }
 
-function exportContour() {
-  const contourData = segmentationStateManager.getContourData(volumeList[0].segmentationId)
+async function exportContour() {
+  const contourData = await segmentationStateManager.getContourData(volumeList[0].segmentationId)
   if (contourData) {
     const data = {
       bounds: contourData.bounds,

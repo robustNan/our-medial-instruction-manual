@@ -264,8 +264,8 @@ function setRepresentationColor(volumeInfo: any, e: Event) {
   );
 }
 
-function exportContour() {
-  const contourData = segmentationStateManager.getContourData(
+async function exportContour() {
+  const contourData = await segmentationStateManager.getContourData(
     volumeList[0].segmentationId
   );
   if (contourData) {

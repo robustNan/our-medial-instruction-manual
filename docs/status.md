@@ -196,6 +196,7 @@ type ContourData = {
 import { managers } from 'our-medical'
 const { segmentationStateManager } = managers
 
+// 异步
 segmentationStateManager.getContourData(segmentationId: string)
 ```
 

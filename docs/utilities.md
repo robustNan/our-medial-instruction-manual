@@ -50,10 +50,14 @@ utilities.pointInVolumeBoundingBox(
  * vite: import Worker from '../***.worker.js?worker'
  * webpack: import Worker from '../***.worker.js'
  */
-utilities.ThreadPool(
+const pool = utilities.ThreadPool(
   WorkerConstructor: (new () => Worker) | { scriptURL: string | URL; options?: WorkerOptions | undefined },
   maxWorkers?: number
 )
+
+// 添加/移除任务队列结束后的订阅
+pool.addSubscription((this: ThreadPool) => void)
+pool.removeSubscription((this: ThreadPool) => void)
 
 // 通过序列ID生成体积ID，这样可以获取到与组件内部一致的体积ID
 utilities.idGenerator.seriesIdToVolumeId(seriesId: string)
