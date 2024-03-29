@@ -172,7 +172,7 @@ utilities.dragAddNail(ComponentID, {
 
 // 用于实现拖拽添加基准标记点
 utilities.dragAddFiducial(ComponentID, {
-  color?: string,
+  color: string,
   addedCallback: (e: Types.EventTypes.NewPointFromDragEvent) => void,
   beforeAddHook: (
     viewport: coreTypes.IViewport,

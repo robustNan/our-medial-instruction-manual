@@ -521,26 +521,20 @@ import type { Types as coreTypes } from '@cornerstone/core'
 // 添加基准标记点
 fiducial.add(
   modelId: string, //患者模型ID
-  data: {
-    pointId: string //标记点ID
-    position: coreTypes.Point3 //标记点坐标
-    color: string //标记点颜色
-  },
+  data: coreTypes.FiducialPoint,
   componentIds?: MedicalComponentID[] //可选，提供组件ID可立即触发视口渲染
 )
 
 // 获取基准标记点
 fiducial.get(modelId: string, pointId?: string)
 
+// 更新基准标记点ID
+fiducial.updateId(modelId: string, prevPointId: string, newPointId: string)
+
 // 更新基准标记点信息
 fiducial.update(
   modelId: string,
-  data: {
-    pointId: string
-    color?: string
-    point?: coreTypes.Point3
-    markerId?: string
-  },
+  data: { pointId: string, color?: string, point?: coreTypes.Point3 },
   componentIds?: MedicalComponentID[]
 )
 
@@ -675,6 +669,9 @@ imageCenter.get(modelId: string)
 // 删除影像中心数据
 imageCenter.remove(modelId: string, componentIds?: MedicalComponentID[])
 
+// 更新影像中心ID
+imageCenter.updateId(modelId: string, pointId: string)
+
 // 更新影像中心数据
 imageCenter.update(
   pointId: string,
@@ -752,6 +749,9 @@ origin.remove(modelId: string, componentIds?: MedicalComponentID[])
 // 获取患者原点数据
 origin.get(modelId: string)
 
+// 更新患者原点ID
+origin.updateId(modelId: string, pointId: string)
+
 // 更新患者原点坐标
 origin.update(
   pointId: string,
@@ -767,6 +767,7 @@ import type { Types as coreTypes } from '@cornerstonejs/core'
 
 type Shot = {
   collSize: number
+  disabled?: boolean
   number?: number //提供后显示靶点编号
   point: coreTypes.Point3
   pointId?: string
