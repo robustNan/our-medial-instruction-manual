@@ -193,7 +193,7 @@ export default function initShotModule(componentId: string, patientModelId: stri
     managers.toolsStateManager.setHeaderToolDisabled(componentId, true)
 
     utilities.dragAddShot(componentId, {
-      // planId: planId_P, //非必传，鼠标抬起口根据视口ToolGroupID对应的PlanID自动指定
+      // planId: planId_P, //非必传，鼠标抬起后根据视口ToolGroupID对应的PlanID自动指定
       // shotId: '', //非必传
       collSize: 18,
       number: 1,

@@ -7,9 +7,22 @@ const { draggable: draggableManager, couch: couchManager } = draggableStateManag
 
 export default function initCouchModule(componentId: string, patientModelId: string) {
   const couchOffset: coreTypes.Point3 = [0, 0, 0]
-  const primaryCouchSize: coreTypes.Point3 = [300, 25, 1850]
+  const primaryCouchSize: coreTypes.Point3 = [300, 25, 1850] //[width thickness length]
 
-  const difference = [
+  /**
+   *      ___A___
+   *     /      /| B
+   *    /      / /
+   *   /      / / C
+   *  /______/ /
+   *  |______|/
+   *
+   * A->width  B->thickness  C->length
+   *
+   * 治疗床原点位于长方体A边的中点点上
+   * 通过 +thickness/2 和 -length/2 计算出治疗床几何中心点
+   */
+  const couchCenter = [
     couchOffset[0],
     couchOffset[1] + primaryCouchSize[1] / 2,
     couchOffset[2] - primaryCouchSize[2] / 2
@@ -19,9 +32,8 @@ export default function initCouchModule(componentId: string, patientModelId: str
     couchSize: [500, 25, 1000],
     point: [0, 0, -141],
     originRender: (point: coreTypes.Point3) => {
-      let str = ''
-      point.forEach((item) => (str = str + item.toFixed(2)))
-      return str
+      const str = point.map((v) => (v / 10).toFixed(2)).join(',')
+      return str.slice(0, str.length - 1)
     }
   }
 
@@ -76,27 +88,26 @@ export default function initCouchModule(componentId: string, patientModelId: str
     draggableManager.setCouchVisible(componentId, !visible.primary)
   }
 
+  /** @type {*} 治疗床原点 */
   const couchRef = ref([0, 0, 0])
+
+  /** @type {*} 患者原点 */
   const originRef = ref([0, 0, -141])
 
   function addPrimary() {
     const point: coreTypes.Point3 = [0, 0, 0]
     for (let i = 0; i < 3; i++) {
-      point[i] = originRef.value[i] + difference[i] + couchRef.value[i]
+      point[i] = originRef.value[i] + couchCenter[i] + couchRef.value[i]
     }
 
-    const couch_P: Couch = {
+    const couch_P: Types.Couch = {
       couchSize: primaryCouchSize,
       point,
       originRender: (point: coreTypes.Point3) => {
-        let str = ''
-
-        for (let i = 0; i < 3; i++) {
-          str = str + (point[i] - originRef.value[i] - difference[i]).toFixed(2) + ','
-        }
-
-        str = str.slice(0, str.length - 1)
-        return str
+        const str = point
+          .map((v, i) => ((v - originRef.value[i] - couchCenter[i]) / 10).toFixed(2))
+          .join(',')
+        return str.slice(0, str.length - 1)
       }
     }
 
@@ -115,7 +126,7 @@ export default function initCouchModule(componentId: string, patientModelId: str
 
     const pointInWorld: coreTypes.Point3 = [0, 0, 0]
     for (let i = 0; i < 3; i++) {
-      pointInWorld[i] = originRef.value[i] + difference[i] + couchRef.value[i]
+      pointInWorld[i] = originRef.value[i] + couchCenter[i] + couchRef.value[i]
     }
 
     couchManager.update(planId_P, pointInWorld, [componentId])
@@ -136,7 +147,7 @@ export default function initCouchModule(componentId: string, patientModelId: str
       const { position } = detail
 
       for (let i = 0; i < 3; i++) {
-        couchRef.value[i] = position[i] - originRef.value[i] - difference[i]
+        couchRef.value[i] = position[i] - originRef.value[i] - couchCenter[i]
       }
     }
   )
@@ -147,7 +158,7 @@ export default function initCouchModule(componentId: string, patientModelId: str
       const { position } = detail
 
       for (let i = 0; i < 3; i++) {
-        couchRef.value[i] = position[i] - originRef.value[i] - difference[i]
+        couchRef.value[i] = position[i] - originRef.value[i] - couchCenter[i]
       }
     }
   )

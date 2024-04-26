@@ -137,7 +137,7 @@ import { utilities, type Types } from '@/components/medical'
 
 // 用于实现拖拽加添剂量点靶点
 utilities.dragAddShot(ComponentID, {
-  planId?: string, //非必传，鼠标抬起口根据视口ComponentID对应的PlanID自动指定
+  planId?: string, //非必传，鼠标抬起后根据视口ComponentID对应的PlanID自动指定
   shotId?: string,
   collSize: number,
   number?: number,
