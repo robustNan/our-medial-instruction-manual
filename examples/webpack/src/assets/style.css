@@ -1,4 +1,56 @@
 html,
 body {
   background: darkslategray;
+  font-size: 12px;
+}
+
+.display-area {
+  margin: auto;
+  height: 525px;
+  width: 1650px;
+}
+
+.component-operating {
+  display: flex;
+  /* justify-content: center; */
+  outline: 1px solid burlywood;
+  margin: 10px auto 0;
+  padding: 5px;
+  width: 1640px;
+}
+
+.component-operating .row {
+  margin-right: 20px;
+}
+
+.component-operating .row * {
+  margin-right: 5px;
+}
+
+.component-operating .row:last-of-type {
+  margin-right: 0;
+}
+
+.tools {
+  margin: 10px auto 0;
+  width: 1650px;
+}
+
+.tool-operating {
+  outline: 1px solid burlywood;
+  margin-bottom: 1px;
+  padding: 5px;
+  width: calc(100% - 10px);
+}
+
+.tool-operating .row {
+  margin-bottom: 10px;
+}
+
+.tool-operating .row * {
+  margin-right: 5px;
+}
+
+.tool-operating .row:last-of-type {
+  margin-bottom: 0;
 }

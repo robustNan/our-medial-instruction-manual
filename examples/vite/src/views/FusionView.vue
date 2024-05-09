@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { nextTick, ref, watch } from 'vue'
-import type { Types as coreTypes } from '@cornerstonejs/core'
-import type { Types } from 'our-medical'
-import MedicalImage, { CONSTANT, managers, tools } from 'our-medical'
+// import type { Types as coreTypes } from '@cornerstonejs/core'
+import MedicalImage, { CONSTANT, managers, tools, utilities } from 'our-medical'
 import { SeriesNames, useSeriesProps } from '@/scripts/composables'
+
+import type { Types } from 'our-medical'
 
 const { Layout } = CONSTANT
 
 const id = 'fusion'
 const layout = ref(Layout.Fusion)
 
-function changeLayout(e: GlobalEventHandlersEventMap['change']): void {
+function changeLayout(e: Event): void {
   const { target } = e
   layout.value = (target as HTMLSelectElement).value as CONSTANT.Layout
 }
@@ -21,8 +22,10 @@ function changeLayout(e: GlobalEventHandlersEventMap['change']): void {
  * ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------
  */
 
-const { props: priProps, propsRefs: priPreosRefs } = useSeriesProps(SeriesNames.a_hfs_ct_ohif)
+// const { props: priProps, propsRefs: priPreosRefs } = useSeriesProps(SeriesNames.cbos_ct)
+// const { props: secProps, propsRefs: secPropsRefs } = useSeriesProps(SeriesNames.cbos_mr)
 
+const { props: priProps, propsRefs: priPreosRefs } = useSeriesProps(SeriesNames.a_hfs_ct_ohif)
 const { props: secProps, propsRefs: secPropsRefs } = useSeriesProps(SeriesNames.a_hfs_pt_ohif)
 
 function renderCT() {
@@ -99,21 +102,35 @@ function reset() {
 }
 
 function auto() {
-  /* const options = {
-    componentIds: [id],
-    angle: [0.0304229, -0.00297256, -0.142616].map(v => -v) as coreTypes.Point3, // 来自ITK配准的数据需要将旋转量全部乘-1
-    center: [0, -185, 121.8] as coreTypes.Point3,
-    translation: [-4.669, 184.801, -95.9747].map(v => -v) as [number, number, number] // 来自ITK配准的数据需要将偏移量全部乘-1
-  } */
+  const volumeProps = managers.seriesStateManager.getVolumeProps(
+    utilities.idGenerator.seriesIdToVolumeId(secPropsRefs.seriesId)
+  )
 
-  const options = {
-    componentIds: [id],
-    angle: [0.215159, -0.00553356, -0.074691].map((v) => v) as coreTypes.Point3, // FFP和FFS的序列配准数据不需要乘-1
-    center: [-0.341797, -64.6582, -278.5] as coreTypes.Point3,
-    translation: [-7.12317, 165.655, -174.968].map((v) => -v) as coreTypes.Point3 // 来自ITK配准的数据需要将偏移量全部乘-1
+  console.log(volumeProps)
+
+  if (volumeProps) {
+    /* const options = {
+      componentIds: [id],
+      isDegrees: true,
+      angle: [-5.48, 1.53, -0.05].map(v => -v) as coreTypes.Point3, // 来自ITK配准的数据需要将旋转量全部乘-1
+      center: volumeProps.center,
+      translation: [7.4, 23.1, -32.9].map(v => -v) as [number, number, number] // 来自ITK配准的数据需要将偏移量全部乘-1
+    } */
+    /* const options = {
+      componentIds: [id],
+      isDegrees: true,
+      angle: [-10.09, 2.21, 8.05].map(v => -v) as coreTypes.Point3, // 来自ITK配准的数据需要将旋转量全部乘-1
+      center: volumeProps.center,
+      translation: [17.088, -8.312, 7.355].map(v => -v) as [number, number, number] // 来自ITK配准的数据需要将偏移量全部乘-1
+    } */
+    /* const options = {
+      componentIds: [id],
+      angle: [0.215159, -0.00553356, -0.074691].map(v => v) as coreTypes.Point3, // FFP和FFS的序列配准数据不需要乘-1
+      center: [-0.341797, -64.6582, -278.5] as coreTypes.Point3,
+      translation: [-7.12317, 165.655, -174.968].map(v => -v) as coreTypes.Point3 // 来自ITK配准的数据需要将偏移量全部乘-1
+    } */
+    // managers.volumeStateManager.setVolumeFromOriginal(secPropsRefs.seriesId, options)
   }
-
-  managers.volumeStateManager.setVolumeFromOriginal(secPropsRefs.seriesId, options)
 }
 
 /**
@@ -179,48 +196,51 @@ watch(
 </script>
 
 <template>
-  <main>
-    <!-- <div style="height: 525px; width: 1649px; margin: auto"> -->
-    <div style="height: 725px; width: 1649px; margin: auto">
-      <MedicalImage
-        :id="id"
-        :layout="layout"
-        :primary="priPreosRefs"
-        :prefix-mark="{
-          primary: { en: 'Primary', zh: '主序列' },
-          secondary: { en: 'Secondary', zh: '次序列' }
-        }"
-        :secondary="secPropsRefs"
-        slice-sync
-      />
+  <div class="display-area">
+    <MedicalImage
+      :id="id"
+      :layout="layout"
+      :primary="priPreosRefs"
+      :prefix-mark="{
+        primary: { en: 'Primary', zh: '主序列' },
+        secondary: { en: 'Secondary', zh: '次序列' }
+      }"
+      :secondary="secPropsRefs"
+      slice-sync
+    />
+  </div>
+
+  <div class="component-operating">
+    <div class="row">
+      <select @change="changeLayout">
+        <option :selected="layout === Layout.Primary" :value="Layout.Primary">Primary</option>
+        <option :selected="layout === Layout.Secondary" :value="Layout.Secondary">Secondary</option>
+        <option :selected="layout === Layout.SideBySide" :value="Layout.SideBySide">
+          SideBySide
+        </option>
+        <option :selected="layout === Layout.Fusion" :value="Layout.Fusion">Fusion</option>
+      </select>
+
+      <button @click="renderAll">Render ALL</button>
+      <button @click="auto">Auto Registration</button>
+      <button @click="manual">Manual Registration</button>
+      <button @click="reset">Reset</button>
     </div>
+  </div>
 
-    <div style="width: 1649px; margin: 20px auto 0">
-      <div class="row">
-        <select @change="changeLayout">
-          <option :selected="layout === Layout.Primary" :value="Layout.Primary">Primary</option>
-          <option :selected="layout === Layout.Secondary" :value="Layout.Secondary">
-            Secondary
-          </option>
-          <option :selected="layout === Layout.SideBySide" :value="Layout.SideBySide">
-            SideBySide
-          </option>
-          <option :selected="layout === Layout.Fusion" :value="Layout.Fusion">Fusion</option>
-        </select>
-
-        <button @click="renderAll">Render ALL</button>
-
-        <button @click="auto">Auto Registration</button>
-
-        <button @click="manual">Manual Registration</button>
-
-        <button @click="reset">Reset</button>
-      </div>
-
+  <div class="tools">
+    <div class="tool-operating">
       <div class="row">
         <label for="">
           <!-- <input type="number" v-model="transparency" /> -->
-          <input type="range" min="0" max="100" step="1" v-model="transparency" />
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="0.1"
+            v-model="transparency"
+            style="width: 500px"
+          />
           {{ transparency }}
         </label>
 
@@ -241,14 +261,10 @@ watch(
           <span>min {{ primaryRange[0] }}:</span>
           <input type="number" step="1" v-model="primaryVOI[0]" />
         </label>
-
         <label>
           <span>max {{ primaryRange[1] }}:</span>
           <input type="number" step="1" v-model="primaryVOI[1]" />
         </label>
-      </div>
-
-      <div class="row">
         <label>
           <span>min {{ secondaryRange[0] }}:</span>
           <input :value="secondaryVOI[0]" readonly />
@@ -260,7 +276,7 @@ watch(
         </label>
       </div>
     </div>
-  </main>
+  </div>
 </template>
 
 <style scoped>

@@ -14,11 +14,13 @@
     "@cornerstonejs/tools": "^1.51.5",
     "@kitware/vtk.js": "^29.3.0",
     "core-js": "^3.8.3",
-    "our-medical": "^0.6.11",
+    "lodash": "^4.17.21",
+    "our-medical": "^0.7.0",
     "vue": "^3.2.13",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.1",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",

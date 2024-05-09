@@ -96,6 +96,12 @@ toolsStateManager.addATool(ComponentID, DoseDisplayTool)
 // 修改DoseDisplayTool 激活状态
 toolsStateManager.setAToolEnabled(ComponentID, DoseDisplayTool.toolName)
 toolsStateManager.setAToolDisabled(ComponentID, DoseDisplayTool.toolName)
+
+// 剂量场渲染结束事件
+eventTarget.addEventListener(
+  CONSTANT.Events.DOSE_DRAWED,
+  (event: Types.EventTypes.DoseRenderedEvent) => void
+)
 ```
 
 ### 拖拽工具
