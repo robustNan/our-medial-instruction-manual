@@ -12,6 +12,12 @@
 * 体积勾画
 * 剂量场显示
 * 患者原点、基准标记点、影像中心、头框点、靶点、治疗床等可拖拽元素
+* 手动配准
+
+### 已知问题
+
+* 体积勾画仅支持HFS的序列，其他序列存在勾画问题不适用（可以使用cornerstone3D中的勾画工具替代）
+* 在视口中重叠显示两套序列时，通过volumeStateManager.setOpacity接口设置此序列透明度时，可能会呈现处非线性变化的结果。这可能与序列的层厚有关，目前采用 [1.0 - Math.pow(1.0 - opacity, interval)](https://github.com/cornerstonejs/cornerstone3D/pull/661)的方式计算最终设置到视口中的实际透明度，但最终效果仍不够理想
 
 ### 安装使用
 
