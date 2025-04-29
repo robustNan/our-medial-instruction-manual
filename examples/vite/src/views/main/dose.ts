@@ -57,6 +57,8 @@ export default function initDoseModule(
 
         const volumeId = utilities.idGenerator.seriesIdToVolumeId(priProps.seriesId)
         const volume = cache.getVolume(volumeId)
+        if (!volume) return
+
         const { origin } = volume
 
         imageData.setOrigin(origin)
@@ -86,6 +88,8 @@ export default function initDoseModule(
 
         const volumeId = utilities.idGenerator.seriesIdToVolumeId(secProps.seriesId)
         const volume = cache.getVolume(volumeId)
+        if (!volume) return
+
         const { origin } = volume
 
         imageData.setOrigin(origin)

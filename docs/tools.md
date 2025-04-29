@@ -141,7 +141,7 @@ import type { Types as coreTypes } from '@cornerstonejs/core'
 import type { Types as toolsTypes } from '@cornerstonejs/tools'
 import { utilities, type Types } from '@/components/medical'
 
-// 用于实现拖拽加添剂量点靶点
+// 用于实现拖拽添加剂量点靶点
 utilities.dragAddShot(ComponentID, {
   planId?: string, //非必传，鼠标抬起后根据视口ComponentID对应的PlanID自动指定
   shotId?: string,
@@ -155,7 +155,7 @@ utilities.dragAddShot(ComponentID, {
   ) => Promise<boolean>
 })
 
-// 用于实现拖拽加添剂量点
+// 用于实现拖拽添加剂量点
 utilities.dragAddDosePoint(ComponentID, {
   planId?: string, //非必传，鼠标抬起口根据视口ComponentID对应的PlanID自动指定
   number?: number,
@@ -166,7 +166,7 @@ utilities.dragAddDosePoint(ComponentID, {
   ) => Promise<boolean>
 })
 
-// 用于实现拖拽加添头钉点
+// 用于实现拖拽添加头钉点
 utilities.dragAddNail(ComponentID, {
   number?: number,
   addedCallback: (e: Types.EventTypes.NewPointFromDragEvent) => void,
@@ -396,3 +396,33 @@ eventTarget.addEventListener(
   (event: Types.EventTypes.NewPointFromDragEvent) => void
 )
 ```
+
+### 配准工具
+
+    当使用Fusion模式重叠显示两套序列时，可以使用配准工具在视口中移动或旋转次序列的体积，并且能够通过监听VOLUME_TRANSFORM事件获取到体积操作过程中的实时数据，数据中包含反应体积当前旋转和平移状态的degrees、radians、translation属性。
+
+#### ManualRegistrationTool
+
+    ManualRegistrationTool将在次序列体积中心点上显示一个旋转控制环，可以拖拽控制环上的红色圆圈绕体积中心旋转。也可以拖拽体积进行移动，控制环将随体积同步移动。如果通过volumeStateManager.setVolumeTransform接口设置次序列的旋转和平移后，控制环的显示也将随新的旋转和平移状态发生变化。
+
+```typescript
+import { managers, tools } from 'our-medical'
+
+const { toolsStateManager } = managers
+const { ManualRegistrationTool } = tools
+
+/**
+ * 当使用Fusion模式重叠显示两套序列时，组件将按照Primary的模式呈现视口
+ * 因此应仅将ManualRegistrationTool工具应用到主序列对应的视口中
+ */
+const id = ComponentID + '|' + CONSTANT.TOOL_GROUP_TYPE.P
+
+// 向组件ToolGroup中添加ManualRegistrationTool
+toolsStateManager.addATool(id, ManualRegistrationTool)
+
+// 修改ManualRegistrationTool激活状态
+toolsStateManager.setAToolActived(id, ManualRegistrationTool.toolName)
+toolsStateManager.setAToolDisabled(id, ManualRegistrationTool.toolName)
+```
+
+  

@@ -119,6 +119,8 @@ export default function initDoseModule(
           priProps.seriesId
         );
         const volume = cache.getVolume(volumeId);
+        if (!volume) return;
+
         const { origin } = volume;
 
         imageData.setOrigin(origin);
@@ -150,6 +152,8 @@ export default function initDoseModule(
           secProps.seriesId
         );
         const volume = cache.getVolume(volumeId);
+        if (!volume) return;
+
         const { origin } = volume;
 
         imageData.setOrigin(origin);

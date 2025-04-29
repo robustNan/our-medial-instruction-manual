@@ -73,7 +73,7 @@ volumeStateManager.setColor(
 
 volumeStateManager.getColor(componentId: MedicalComponentID | DisplayComponentID)
 
-// 设置组件浮动层不透明度
+// 设置组件浮动层不透明度（当前实现存在透明度变化非线性的问题）
 volumeStateManager.setOpacity(
   componentId: MedicalComponentID | DisplayComponentID,
   opacity: number,
@@ -82,16 +82,7 @@ volumeStateManager.setOpacity(
 
 volumeStateManager.getOpacity(componentId: MedicalComponentID | DisplayComponentID)
 
-// 还原体的旋转和位移
-volumeStateManager.resetVolume(
-  id: string, //体积/序列ID
-  options?: {
-    componentIds?: string[] //要被更新的组件ID
-    immediate: boolean  //是否立即更新视口，默认为：true
-  }
-)
-
-// 始终从体积的原始状态开始旋转、平移体积
+// 始终从体积的原始状态开始旋转、平移体积，可以指定旋转中心
 volumeStateManager.setVolumeFromOriginal(
   id: string, //体积/序列ID
   options: {
@@ -103,9 +94,38 @@ volumeStateManager.setVolumeFromOriginal(
   },
   immediate?: boolean  //是否立即更新视口，默认为：true
 )
+
+// 还原体的旋转和位移，配合setVolumeFromOriginal使用
+volumeStateManager.resetVolume(
+  id: string, //体积/序列ID
+  options?: {
+    componentIds?: string[] //要被更新的组件ID
+    immediate: boolean  //是否立即更新视口，默认为：true
+  }
+)
+
+/**
+ * 设置体积的旋转和偏移，先围绕体积原始的中心点进行旋转，再从原始中心点偏移
+ * 可结合ManualRegistrationTool工具一起使用
+ */
+volumeStateManager.setVolumeTransform(
+  id: string, //体积/序列ID
+  options: {
+    angle: coreTypes.Point3 //旋转角度
+    center: coreTypes.Point3 //旋转中心
+    translation: coreTypes.Point3 //平移
+    isDegrees?: boolean //旋转角度单位是否为度
+    componentIds?: string[] //要被更新的组件ID
+  },
+  emit?: boolean  //是否触发VOLUME_TRANSFORM事件，默认为：false
+)
+
+// 获取/删除体积平移旋转状态的Ref，其中包含degrees、radians、translation
+volumeStateManager.getVolumeTransformState(id: string)
+volumeStateManager.removeVolumeTransformState(id: string)
 ```
 
-    如果一个序列存在配准数据的情况下，也可以在其记载结束后通过setVolumeFromOriginal设置配准数据。
+    如果一个序列存在配准数据的情况下，也可以在其加载结束后通过setVolumeFromOriginal设置配准数据。
 
 ### 分割体积管理
 
@@ -621,14 +641,14 @@ frame.setCurrExtractedInfo(
 // 获取当前提取点
 frame.getCurrExtractedInfo(modelId: string)
 
-// 设置头款注册状态
+// 设置头框注册状态
 frame.setFrameRegisted(
   modelId: string, //患者模型ID
   registed: boolean, //默认为true，设置头框状态为已注册
   componentIds: MedicalComponentID[]
 )
 
-// 获取头款注册状态
+// 获取头框注册状态
 frame.getFrameRegisted(modelId: string)
 
 // 设置拟合点数据

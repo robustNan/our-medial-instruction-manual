@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { nextTick, ref, watch } from "vue";
-// import type { Types as coreTypes } from '@cornerstonejs/core'
+import { SeriesNames, useSeriesProps } from "@/scripts/composables";
+import { eventTarget } from "@cornerstonejs/core";
+import { vec3 } from "gl-matrix";
 import MedicalImage, {
   CONSTANT,
   managers,
   tools,
   utilities,
 } from "our-medical";
-import { SeriesNames, useSeriesProps } from "@/scripts/composables";
+import { nextTick, reactive, ref, unref, watch } from "vue";
 
+import type { Types as coreTypes } from "@cornerstonejs/core";
 import type { Types } from "our-medical";
 
 const { Layout } = CONSTANT;
@@ -93,55 +95,100 @@ function renderAll() {
   renderPT();
 }
 
+const activedColor = "gold";
+const registrationRef = ref(false);
+
 function manual() {
-  managers.toolsStateManager.addATool(
-    id + "|" + CONSTANT.TOOL_GROUP_TYPE.P,
-    tools.ManualRegistrationTool
-  );
-  managers.toolsStateManager.setAToolActived(
-    id + "|" + CONSTANT.TOOL_GROUP_TYPE.P,
-    tools.ManualRegistrationTool.toolName
-  );
+  if ((registrationRef.value = !unref(registrationRef))) {
+    managers.toolsStateManager.addATool(
+      id + "|" + CONSTANT.TOOL_GROUP_TYPE.P,
+      tools.ManualRegistrationTool
+    );
+    managers.toolsStateManager.setAToolActived(
+      id + "|" + CONSTANT.TOOL_GROUP_TYPE.P,
+      tools.ManualRegistrationTool.toolName
+    );
+  } else {
+    managers.toolsStateManager.setAToolDisabled(
+      id + "|" + CONSTANT.TOOL_GROUP_TYPE.P,
+      tools.ManualRegistrationTool.toolName
+    );
+  }
 }
+
+const state = reactive({
+  degrees: [0, 0, 0],
+  translation: [0, 0, 0],
+});
 
 function reset() {
   // 接受过配准的序列reset时应该调用setVolumeFromOriginal而不是这里的resetVolume
-  managers.volumeStateManager.resetVolume(secPropsRefs.seriesId, {
+  const options = {
     componentIds: [id],
-    immediate: true,
-  });
+    angle: [0, 0, 0] as coreTypes.Point3,
+    translation: [0, 0, 0] as coreTypes.Point3,
+    isDegrees: true,
+  };
+  managers.volumeStateManager.setVolumeTransform(
+    secPropsRefs.seriesId,
+    options,
+    true
+  );
 }
 
 function auto() {
-  const volumeProps = managers.seriesStateManager.getVolumeProps(
+  const priVolumeProps = managers.seriesStateManager.getVolumeProps(
+    utilities.idGenerator.seriesIdToVolumeId(priPreosRefs.seriesId)
+  );
+  const secVolumeProps = managers.seriesStateManager.getVolumeProps(
     utilities.idGenerator.seriesIdToVolumeId(secPropsRefs.seriesId)
   );
 
-  console.log(volumeProps);
-
-  if (volumeProps) {
-    /* const options = {
+  if (priVolumeProps && secVolumeProps) {
+    const translation = vec3.subtract(
+      vec3.create(),
+      priVolumeProps.center,
+      secVolumeProps.center
+    );
+    const options = {
       componentIds: [id],
+      angle: [...state.degrees] as coreTypes.Point3,
+      translation: translation as coreTypes.Point3,
       isDegrees: true,
-      angle: [-5.48, 1.53, -0.05].map(v => -v) as coreTypes.Point3, // 来自ITK配准的数据需要将旋转量全部乘-1
-      center: volumeProps.center,
-      translation: [7.4, 23.1, -32.9].map(v => -v) as [number, number, number] // 来自ITK配准的数据需要将偏移量全部乘-1
-    } */
-    /* const options = {
-      componentIds: [id],
-      isDegrees: true,
-      angle: [-10.09, 2.21, 8.05].map(v => -v) as coreTypes.Point3, // 来自ITK配准的数据需要将旋转量全部乘-1
-      center: volumeProps.center,
-      translation: [17.088, -8.312, 7.355].map(v => -v) as [number, number, number] // 来自ITK配准的数据需要将偏移量全部乘-1
-    } */
-    /* const options = {
-      componentIds: [id],
-      angle: [0.215159, -0.00553356, -0.074691].map(v => v) as coreTypes.Point3, // FFP和FFS的序列配准数据不需要乘-1
-      center: [-0.341797, -64.6582, -278.5] as coreTypes.Point3,
-      translation: [-7.12317, 165.655, -174.968].map(v => -v) as coreTypes.Point3 // 来自ITK配准的数据需要将偏移量全部乘-1
-    } */
-    // managers.volumeStateManager.setVolumeFromOriginal(secPropsRefs.seriesId, options)
+    };
+    managers.volumeStateManager.setVolumeTransform(
+      secPropsRefs.seriesId,
+      options,
+      true
+    );
   }
+}
+
+eventTarget.addEventListener(
+  CONSTANT.Events.VOLUME_TRANSFORM,
+  (e: Types.EventTypes.VolumeTransformEvent) => {
+    const { degrees, translation } = e.detail.state;
+    state.degrees[0] = degrees[0];
+    state.degrees[1] = degrees[1];
+    state.degrees[2] = degrees[2];
+
+    state.translation[0] = translation[0];
+    state.translation[1] = translation[1];
+    state.translation[2] = translation[2];
+  }
+);
+
+function transformInputEnterHandler() {
+  const options = {
+    componentIds: [id],
+    angle: [...state.degrees] as coreTypes.Point3,
+    translation: [...state.translation] as coreTypes.Point3,
+    isDegrees: true,
+  };
+  managers.volumeStateManager.setVolumeTransform(
+    secPropsRefs.seriesId,
+    options
+  );
 }
 
 /**
@@ -246,7 +293,14 @@ watch(
 
       <button @click="renderAll">Render ALL</button>
       <button @click="auto">Auto Registration</button>
-      <button @click="manual">Manual Registration</button>
+      <button
+        :style="{
+          background: registrationRef ? activedColor : '',
+        }"
+        @click="manual"
+      >
+        Manual Registration
+      </button>
       <button @click="reset">Reset</button>
     </div>
   </div>
@@ -296,6 +350,66 @@ watch(
         <label>
           <span>max {{ secondaryRange[1] }}:</span>
           <input type="number" step="1" v-model="secondaryVOI[1]" />
+        </label>
+      </div>
+
+      <div class="row">
+        <label>
+          <span>R-L (mm):</span>
+          <input
+            type="number"
+            step="1"
+            v-model="state.translation[0]"
+            @keydown.enter="transformInputEnterHandler"
+          />
+        </label>
+        <label>
+          <span>A-P (mm):</span>
+          <input
+            type="number"
+            step="1"
+            v-model="state.translation[1]"
+            @keydown.enter="transformInputEnterHandler"
+          />
+        </label>
+        <label>
+          <span>I-S (mm):</span>
+          <input
+            type="number"
+            step="1"
+            v-model="state.translation[2]"
+            @keydown.enter="transformInputEnterHandler"
+          />
+        </label>
+      </div>
+
+      <div class="row">
+        <label>
+          <span>φ (°):</span>
+          <input
+            type="number"
+            step="1"
+            v-model="state.degrees[0]"
+            @keydown.enter="transformInputEnterHandler"
+          />
+        </label>
+        <label>
+          <span>θ (°):</span>
+          <input
+            type="number"
+            step="1"
+            v-model="state.degrees[1]"
+            @keydown.enter="transformInputEnterHandler"
+          />
+        </label>
+        <label>
+          <span>ψ (°):</span>
+          <input
+            type="number"
+            step="1"
+            v-model="state.degrees[2]"
+            @keydown.enter="transformInputEnterHandler"
+          />
         </label>
       </div>
     </div>

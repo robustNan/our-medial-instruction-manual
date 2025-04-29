@@ -8,18 +8,14 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@cornerstonejs/core": "^1.51.5",
-    "@cornerstonejs/dicom-image-loader": "^1.51.5",
-    "@cornerstonejs/streaming-image-volume-loader": "^1.51.5",
-    "@cornerstonejs/tools": "^1.51.5",
-    "@kitware/vtk.js": "^29.3.0",
     "core-js": "^3.8.3",
     "lodash": "^4.17.21",
-    "our-medical": "^0.7.0",
+    "our-medical": "^0.8.0",
     "vue": "^3.2.13",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {
+    "@babel/plugin-transform-class-static-block": "^7.26.0",
     "@types/lodash": "^4.17.1",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",

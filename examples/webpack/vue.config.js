@@ -18,4 +18,11 @@ module.exports = defineConfig({
     // 解决：worker 热更新问题
     config.module.rule("js").exclude.add(/\.worker\.js$/);
   },
+  configureWebpack: {
+    resolve: {
+      alias: {
+        "@cornerstonejs/tools": "@cornerstonejs/tools/dist/umd/index.js",
+      },
+    },
+  },
 });
