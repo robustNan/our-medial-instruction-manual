@@ -417,8 +417,11 @@ const { ManualRegistrationTool } = tools
  */
 const id = ComponentID + '|' + CONSTANT.TOOL_GROUP_TYPE.P
 
-// 向组件ToolGroup中添加ManualRegistrationTool
-toolsStateManager.addATool(id, ManualRegistrationTool)
+/**
+ * 向组件ToolGroup中添加ManualRegistrationTool
+ * 可以通过设置rotateable=false禁用旋转功能，仅进行平移操作
+ */
+toolsStateManager.addATool(id, ManualRegistrationTool, { rotateable: false })
 
 // 修改ManualRegistrationTool激活状态
 toolsStateManager.setAToolActived(id, ManualRegistrationTool.toolName)
